@@ -1,0 +1,90 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../models/post.dart';
+import '../constants/colors.dart';
+
+class PostCard extends StatelessWidget {
+  final Post post;
+
+  const PostCard({super.key, required this.post});
+
+  @override
+  Widget build(BuildContext context) {
+    const feelingName = 'Angry';
+    const feelingEmoji = '😡';
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Pasek emocji
+          Container(
+            decoration: const BoxDecoration(
+              color: AppColors.angry,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            alignment: Alignment.centerRight,
+            child: Text(
+              feelingName,
+              style: const TextStyle(
+                color: AppColors.textLight,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          // Zawartość posta
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${post.authorUsername} feels... $feelingName $feelingEmoji',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: AppColors.textLight,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  timeAgo(post.createdAt),
+                  style: TextStyle(color: AppColors.textDim, fontSize: 13),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  post.body,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: AppColors.textLight,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String timeAgo(DateTime dateTime) {
+    final duration = DateTime.now().difference(dateTime);
+    if (duration.inMinutes < 1) return 'just now';
+    if (duration.inMinutes < 60) return '${duration.inMinutes} minutes ago';
+    if (duration.inHours < 24) return '${duration.inHours} hours ago';
+    return DateFormat('yyyy-MM-dd').format(dateTime);
+  }
+}
