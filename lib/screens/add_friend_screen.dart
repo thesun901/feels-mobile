@@ -50,6 +50,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
           'Add friend',
           style: TextStyle(color: AppColors.textLight),
         ),
+        centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.textLight),
         elevation: 0,
       ),
@@ -58,26 +59,33 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
         child: Column(
           children: [
             // Pasek wyszukiwania
-            TextField(
-              controller: _searchController,
-              focusNode: _searchFocusNode,
-              style: const TextStyle(color: AppColors.textLight),
-              decoration: InputDecoration(
-                hintText: 'Search users...',
-                hintStyle: const TextStyle(color: AppColors.textDim),
-                prefixIcon: const Icon(Icons.search, color: AppColors.textDim),
-                filled: true,
-                fillColor: _isSearchFocused
-                    ? AppColors.cardBackground.withOpacity(0.5) // jaśniejszy kolor
-                    : AppColors.cardBackground,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+            // Zamiast samego TextField:
+            Align(
+              alignment: Alignment.center,
+              child: SizedBox(
+                width: 400, // np. 320px, możesz dostosować
+                child: TextField(
+                  controller: _searchController,
+                  focusNode: _searchFocusNode,
+                  style: const TextStyle(color: AppColors.textLight),
+                  decoration: InputDecoration(
+                    hintText: 'Search users...',
+                    hintStyle: const TextStyle(color: AppColors.textDim),
+                    prefixIcon: const Icon(Icons.search, color: AppColors.textDim),
+                    filled: true,
+                    fillColor: _isSearchFocused
+                        ? AppColors.cardBackground.withOpacity(0.5)
+                        : AppColors.cardBackground,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(32), // bardziej zaokrąglone
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  onChanged: (value) {
+                    // TODO: obsługa wyszukiwania
+                  },
                 ),
               ),
-              onChanged: (value) {
-                // TODO: obsługa wyszukiwania
-              },
             ),
             const SizedBox(height: 24),
             // Requests
@@ -121,7 +129,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                       margin: const EdgeInsets.only(top: 4),
                       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 2),
                       child: const Text(
-                        'New friend request',
+                        'New friend request!',
                         style: TextStyle(
                           color: AppColors.peaceful,
                           fontSize: 12,
@@ -163,6 +171,12 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
               ),
               const SizedBox(height: 24),
             ],
+            Divider(
+              color: AppColors.textDim.withOpacity(0.2),
+              thickness: 1,
+              height: 10,
+            ),
+            const SizedBox(height: 16),
             // Add new friend
             Row(
               children: const [
