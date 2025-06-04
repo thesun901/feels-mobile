@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../constants/colors.dart';
+import '../viewmodels/friend_request_provider.dart';
 
-class AddFriendScreen extends StatefulWidget {
+class AddFriendScreen extends ConsumerStatefulWidget {
   const AddFriendScreen({super.key});
 
   @override
-  State<AddFriendScreen> createState() => _AddFriendScreenState();
+  ConsumerState<AddFriendScreen> createState() => _AddFriendScreenState();
 }
 
-class _AddFriendScreenState extends State<AddFriendScreen> {
+class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   bool _isSearchFocused = false;
 
-
   // Przykładowe dane
-  List<Map<String, String>> requests = [
-    {'nickname': 'john_doe', 'avatar': ''},
-    {'nickname': 'jane_smith', 'avatar': ''},
-  ];
+
   List<Map<String, String>> searchResults = [
     {'nickname': 'new_user', 'avatar': ''},
     {'nickname': 'another_user', 'avatar': ''},
@@ -43,6 +41,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final friendRequests = ref.watch(friendRequestsProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.cardBackground,
@@ -71,13 +70,17 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                   decoration: InputDecoration(
                     hintText: 'Search users...',
                     hintStyle: const TextStyle(color: AppColors.textDim),
-                    prefixIcon: const Icon(Icons.search, color: AppColors.textDim),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: AppColors.textDim,
+                    ),
                     filled: true,
                     fillColor: _isSearchFocused
                         ? AppColors.cardBackground.withOpacity(0.5)
                         : AppColors.cardBackground,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32), // bardziej zaokrąglone
+                      borderRadius: BorderRadius.circular(32),
+                      // bardziej zaokrąglone
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -89,88 +92,106 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
             ),
             const SizedBox(height: 24),
             // Requests
-            if (requests.isNotEmpty) ...[
-              Row(
-                children: const [
-                  Text(
-                    'Requests',
-                    style: TextStyle(
-                      color: AppColors.textLight,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+            friendRequests.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, _) => Text(
+                'Błąd: $err',
+                style: const TextStyle(color: AppColors.angry),
               ),
-              const SizedBox(height: 8),
-              ...requests.map(
-                (user) => Container(
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.cardBackground.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    leading: CircleAvatar(
-                      backgroundColor: AppColors.textDim,
-                      child: const Icon(
-                        Icons.person,
-                        color: AppColors.cardBackground,
-                      ),
-                    ),
-                    title: Text(
-                      user['nickname'] ?? '',
-                      style: const TextStyle(color: AppColors.textLight),
-                    ),
-                    subtitle: Container(
-                      margin: const EdgeInsets.only(top: 4),
-                      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 2),
-                      child: const Text(
-                        'New friend request!',
-                        style: TextStyle(
-                          color: AppColors.peaceful,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
+              data: (requests) => requests.isNotEmpty
+                  ? Column(
                       children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            color: AppColors.textDim,
+                        Row(
+                          children: const [
+                            Text(
+                              'Requests',
+                              style: TextStyle(
+                                color: AppColors.textLight,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        ...requests.map(
+                          (req) => Container(
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            decoration: BoxDecoration(
+                              color: AppColors.cardBackground.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              leading: CircleAvatar(
+                                backgroundColor: AppColors.textDim,
+                                child: const Icon(
+                                  Icons.person,
+                                  color: AppColors.cardBackground,
+                                ),
+                              ),
+                              title: Text(
+                                req.sender.username,
+                                style: const TextStyle(
+                                  color: AppColors.textLight,
+                                ),
+                              ),
+                              subtitle: Container(
+                                margin: const EdgeInsets.only(top: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 0,
+                                  vertical: 2,
+                                ),
+                                child: const Text(
+                                  'New friend request!',
+                                  style: TextStyle(
+                                    color: AppColors.peaceful,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.close,
+                                      color: AppColors.textDim,
+                                    ),
+                                    onPressed: () {
+                                      // TODO: odrzuć request
+                                    },
+                                  ),
+                                  Container(
+                                    width: 1,
+                                    height: 30,
+                                    color: AppColors.textDim.withOpacity(0.4),
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.check,
+                                      color: AppColors.peaceful,
+                                    ),
+                                    onPressed: () {
+                                      // TODO: zaakceptuj request
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                          onPressed: () {
-                            // TODO: odrzuć request
-                          },
                         ),
-                        Container(
-                          width: 1,
-                          height: 30,
-                          color: AppColors.textDim.withOpacity(0.4),
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.check,
-                            color: AppColors.peaceful,
-                          ),
-                          onPressed: () {
-                            // TODO: zaakceptuj request
-                          },
-                        ),
+                        const SizedBox(height: 24),
                       ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-            ],
+                    )
+                  : const SizedBox(),
+            ),
             Divider(
               color: AppColors.textDim.withOpacity(0.2),
               thickness: 1,
