@@ -5,7 +5,7 @@ import '../services/api_service.dart';
 import './feed_screen.dart';
 import 'friends_screen.dart';
 
-final selectedIndexProvider = StateProvider<int>((ref) => 0);
+final selectedIndexProvider = StateProvider<int>((ref) => 1);
 
 class HomeScreen extends ConsumerStatefulWidget {
   final int? initialIndex;

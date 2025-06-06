@@ -11,7 +11,9 @@ class PostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Zamiana koloru HEX na Color
-    final Color feelingColor = Color(int.parse(post.feeling.color.replaceFirst('#', '0xff')));
+    final Color feelingColor = Color(
+      int.parse(post.feeling.color.replaceFirst('#', '0xff')),
+    );
     final String feelingName = post.feeling.name;
     final String emoji = post.feeling.emoji;
 
@@ -34,7 +36,9 @@ class PostCard extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               color: feelingColor,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             alignment: Alignment.centerRight,
@@ -53,18 +57,39 @@ class PostCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '${post.authorUsername} feels... $feelingName $emoji',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: AppColors.textLight,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  timeAgo(post.createdAt),
-                  style: TextStyle(color: AppColors.textDim, fontSize: 13),
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundColor: feelingColor,
+                      child: CircleAvatar(
+                        backgroundColor: AppColors.textDim,
+                        child: Icon(
+                          Icons.person,
+                          color: AppColors.cardBackground,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${post.authorUsername} feels... $feelingName $emoji',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: AppColors.textLight,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          timeAgo(post.createdAt),
+                          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDim, fontSize: 13),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
                 const SizedBox(height: 12),
                 Text(

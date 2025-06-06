@@ -166,6 +166,7 @@ class ApiService {
       if (response.statusCode == 200) {
         return true; // Token is valid
       } else {
+        prefs.remove('auth_token'); // Remove invalid token
         return false; // Token is invalid
       }
     } catch (e) {
