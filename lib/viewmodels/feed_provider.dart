@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../models/post.dart';
 import '../services/api_service.dart';
@@ -12,6 +14,7 @@ class FeedNotifier extends AsyncNotifier<List<Post>> {
   @override
   Future<List<Post>> build() async {
     final api = ref.watch(apiServiceProvider);
-    return await api.getPosts();
+    final posts = await api.getPosts();
+    return posts;
   }
 }

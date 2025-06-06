@@ -64,7 +64,13 @@ class FeedScreen extends HookConsumerWidget {
           itemCount: posts.length,
           itemBuilder: (context, index) {
             final post = posts[index];
-            return PostCard(post: post);
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                PostCard(post: post),
+              ],
+            );
           },
         ),
       ),
