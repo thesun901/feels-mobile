@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'screens/feed_screen.dart';
+import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/add_friend_screen.dart';
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
 
   Future<Widget> _checkAuth() async {
     final loggedIn = await ApiService.isLoggedIn();
-    return loggedIn ? const FeedScreen() : const LoginScreen();
+    return loggedIn ? const HomeScreen() : const LoginScreen();
   }
 
   @override
@@ -37,7 +37,9 @@ class MyApp extends StatelessWidget {
         ),
       ),
       routes: {
-        '/feed': (context) => const FeedScreen(),
+        '/chats': (context) => const HomeScreen(initialIndex: 0),
+        '/feed': (context) => const HomeScreen(initialIndex: 1),
+        '/stats': (context) => const HomeScreen(initialIndex: 2),
         '/add_friend': (context) => AddFriendScreen(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
