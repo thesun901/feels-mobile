@@ -234,5 +234,31 @@ class ApiService {
     }
   }
 
+  Future<void> unfriend(String friendUid) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('User not authenticated');
+    }
+
+    final response = await _client.delete(
+      Uri.parse('$baseUrl/accounts/unfriend/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'friend_uid': friendUid}),
+    );
+
+    if (response.statusCode == 200) {
+      // Sukces, znajomy usunięty
+      return;
+    } else {
+      final json = jsonDecode(response.body);
+      throw Exception(json['error'] ?? 'Failed to unfriend');
+    }
+  }
+
   // TODO: Add auth headers when token is available
 }

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../constants/colors.dart';
 import '../viewmodels/accounts_provider.dart';
-import '../services/api_service.dart';
-import '../viewmodels/feed_provider.dart';
+import '../viewmodels/unfriend_provider.dart';
 
 class FriendsScreen extends ConsumerStatefulWidget {
   const FriendsScreen({Key? key}) : super(key: key);
@@ -164,6 +163,25 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
                                     ),
                                   ),
                                 );
+                                if (confirmed == true) {
+                                  try {
+                                    await ref.read(unfriendProvider(friend.uid).future);
+                                    ref.invalidate(
+                                      accountsProvider(const AccountsFilterParams(onlyFriends: true)),
+                                    );
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Friend deleted')),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Error: $e')),
+                                      );
+                                    }
+                                  }
+                                }
                               }
                             }
                           },
