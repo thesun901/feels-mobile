@@ -3,6 +3,7 @@ import '../constants/colors.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../services/api_service.dart';
 import './feed_screen.dart';
+import 'friends_screen.dart';
 
 final selectedIndexProvider = StateProvider<int>((ref) => 0);
 
@@ -77,7 +78,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 'Friends',
                 style: TextStyle(color: AppColors.textLight),
               ),
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const FriendsScreen()),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.settings, color: AppColors.textLight),

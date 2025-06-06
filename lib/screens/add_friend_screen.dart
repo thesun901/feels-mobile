@@ -3,7 +3,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../constants/colors.dart';
 import '../viewmodels/friend_request_provider.dart';
 import '../viewmodels/accounts_provider.dart';
-import '../models/account.dart';
 import '../viewmodels/respond_to_friend_request_provider.dart';
 import '../viewmodels/send_friend_request_provider.dart';
 
@@ -45,7 +44,9 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
   @override
   Widget build(BuildContext context) {
     final friendRequests = ref.watch(friendRequestsProvider);
-    final accountsAsync = ref.watch(accountsProvider);
+    final accountsAsync = ref.watch(
+      accountsProvider(const AccountsFilterParams(excludeFriends: true)),
+    );
     final sendRequest = ref.watch(sendFriendRequestProvider);
     final sendRequestNotifier = ref.read(sendFriendRequestProvider.notifier);
 
@@ -99,141 +100,169 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
                 style: const TextStyle(color: AppColors.angry),
               ),
               data: (requests) {
-                final pendingRequests = requests.where((req) => req.status == 'pending').toList();
+                final pendingRequests = requests
+                    .where((req) => req.status == 'pending')
+                    .toList();
                 return pendingRequests.isNotEmpty
                     ? Column(
-                  children: [
-                    Row(
-                      children: const [
-                        Text(
-                          'Requests',
-                          style: TextStyle(
-                            color: AppColors.textLight,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    ...pendingRequests.map(
-                          (req) => Container(
-                        margin: const EdgeInsets.symmetric(vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.cardBackground.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          leading: CircleAvatar(
-                            backgroundColor: AppColors.textDim,
-                            child: const Icon(
-                              Icons.person,
-                              color: AppColors.cardBackground,
-                            ),
-                          ),
-                          title: Text(
-                            req.sender.username,
-                            style: const TextStyle(
-                              color: AppColors.textLight,
-                            ),
-                          ),
-                          subtitle: Container(
-                            margin: const EdgeInsets.only(top: 4),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 0,
-                              vertical: 2,
-                            ),
-                            child: const Text(
-                              'New friend request!',
-                              style: TextStyle(
-                                color: AppColors.peaceful,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.close,
-                                  color: AppColors.textDim,
+                        children: [
+                          Row(
+                            children: const [
+                              Text(
+                                'Requests',
+                                style: TextStyle(
+                                  color: AppColors.textLight,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                onPressed: () async {
-                                  try {
-                                    await ref.read(
-                                      respondToFriendRequestProvider(
-                                        RespondToFriendRequestParams(
-                                          requestId: req.uid,
-                                          action: 'reject',
-                                        ),
-                                      ).future,
-                                    );
-                                    ref.invalidate(friendRequestsProvider);
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Invitation rejected')),
-                                      );
-                                    }
-                                  } catch (e) {
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Błąd: $e')),
-                                      );
-                                    }
-                                  }
-                                },
-                              ),
-                              Container(
-                                width: 1,
-                                height: 30,
-                                color: AppColors.textDim.withOpacity(0.4),
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.check,
-                                  color: AppColors.peaceful,
-                                ),
-                                onPressed: () async {
-                                  try {
-                                    await ref.read(
-                                      respondToFriendRequestProvider(
-                                        RespondToFriendRequestParams(
-                                          requestId: req.uid,
-                                          action: 'accept',
-                                        ),
-                                      ).future,
-                                    );
-                                    ref.invalidate(friendRequestsProvider);
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Invitation accepted')),
-                                      );
-                                    }
-                                  } catch (e) {
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Błąd: $e')),
-                                      );
-                                    }
-                                  }
-                                },
                               ),
                             ],
                           ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-                )
+                          const SizedBox(height: 8),
+                          ...pendingRequests.map(
+                            (req) => Container(
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              decoration: BoxDecoration(
+                                color: AppColors.cardBackground.withOpacity(
+                                  0.8,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                leading: CircleAvatar(
+                                  backgroundColor: AppColors.textDim,
+                                  child: const Icon(
+                                    Icons.person,
+                                    color: AppColors.cardBackground,
+                                  ),
+                                ),
+                                title: Text(
+                                  req.sender.username,
+                                  style: const TextStyle(
+                                    color: AppColors.textLight,
+                                  ),
+                                ),
+                                subtitle: Container(
+                                  margin: const EdgeInsets.only(top: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 0,
+                                    vertical: 2,
+                                  ),
+                                  child: const Text(
+                                    'New friend request!',
+                                    style: TextStyle(
+                                      color: AppColors.peaceful,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.close,
+                                        color: AppColors.textDim,
+                                      ),
+                                      onPressed: () async {
+                                        try {
+                                          await ref.read(
+                                            respondToFriendRequestProvider(
+                                              RespondToFriendRequestParams(
+                                                requestId: req.uid,
+                                                action: 'reject',
+                                              ),
+                                            ).future,
+                                          );
+                                          ref.invalidate(
+                                            friendRequestsProvider,
+                                          );
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Invitation rejected',
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        } catch (e) {
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text('Błąd: $e'),
+                                              ),
+                                            );
+                                          }
+                                        }
+                                      },
+                                    ),
+                                    Container(
+                                      width: 1,
+                                      height: 30,
+                                      color: AppColors.textDim.withOpacity(0.4),
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 4,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.check,
+                                        color: AppColors.peaceful,
+                                      ),
+                                      onPressed: () async {
+                                        try {
+                                          await ref.read(
+                                            respondToFriendRequestProvider(
+                                              RespondToFriendRequestParams(
+                                                requestId: req.uid,
+                                                action: 'accept',
+                                              ),
+                                            ).future,
+                                          );
+                                          ref.invalidate(
+                                            friendRequestsProvider,
+                                          );
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Invitation accepted',
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        } catch (e) {
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text('Błąd: $e'),
+                                              ),
+                                            );
+                                          }
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+                      )
                     : const SizedBox();
               },
             ),
@@ -282,61 +311,76 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
                     children: filtered
                         .map(
                           (user) => Container(
-                        margin: const EdgeInsets.symmetric(vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.cardBackground.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          leading: CircleAvatar(
-                            backgroundColor: AppColors.textDim,
-                            child: const Icon(
-                              Icons.person,
-                              color: AppColors.cardBackground,
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            decoration: BoxDecoration(
+                              color: AppColors.cardBackground.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              leading: CircleAvatar(
+                                backgroundColor: AppColors.textDim,
+                                child: const Icon(
+                                  Icons.person,
+                                  color: AppColors.cardBackground,
+                                ),
+                              ),
+                              title: Text(
+                                user.username,
+                                style: const TextStyle(
+                                  color: AppColors.textLight,
+                                ),
+                              ),
+                              subtitle: Text(
+                                user.displayName,
+                                style: const TextStyle(
+                                  color: AppColors.textDim,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(
+                                  Icons.add_circle,
+                                  color: AppColors.peaceful,
+                                ),
+                                onPressed: sendRequest.isLoading
+                                    ? null
+                                    : () async {
+                                        try {
+                                          await sendRequestNotifier.send(
+                                            receiverUid: user.uid,
+                                          );
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Invitation sent!',
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                          return;
+                                        } catch (e) {
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text('Błąd: $e'),
+                                              ),
+                                            );
+                                          }
+                                        }
+                                      },
+                              ),
                             ),
                           ),
-                          title: Text(
-                            user.username,
-                            style: const TextStyle(color: AppColors.textLight),
-                          ),
-                          subtitle: Text(
-                            user.displayName,
-                            style: const TextStyle(color: AppColors.textDim, fontSize: 12),
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(
-                              Icons.add_circle,
-                              color: AppColors.peaceful,
-                            ),
-                            onPressed: sendRequest.isLoading
-                                ? null
-                                : () async {
-                              try {
-                                await sendRequestNotifier.send(
-                                  receiverUid: user.uid,
-                                );
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Invitation sent!')),
-                                  );
-                                }
-                                return;
-                              } catch (e) {
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Błąd: $e')),
-                                  );
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                    )
+                        )
                         .toList(),
                   );
                 },

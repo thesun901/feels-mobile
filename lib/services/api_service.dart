@@ -202,13 +202,20 @@ class ApiService {
     }
   }
 
-  Future<List<Account>> getAccounts({bool excludeFriends = false}) async {
+  Future<List<Account>> getAccounts({
+    bool excludeFriends = false,
+    bool onlyFriends = false,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
 
+    final queryParams = <String, String>{};
+    if (excludeFriends) queryParams['exclude_friends'] = 'true';
+    if (onlyFriends) queryParams['only_friends'] = 'true';
+
     final uri = Uri.parse(
-      '$baseUrl/accounts/${excludeFriends ? '?exclude_friends=true' : ''}',
-    );
+      '$baseUrl/accounts/',
+    ).replace(queryParameters: queryParams.isNotEmpty ? queryParams : null);
 
     final headers = {
       'Content-Type': 'application/json',
@@ -225,7 +232,6 @@ class ApiService {
       throw Exception('Failed to load accounts: ${response.statusCode}');
     }
   }
-
 
   // TODO: Add auth headers when token is available
 }

@@ -1,17 +1,28 @@
-// lib/viewmodels/accounts_provider.dart
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../models/account.dart';
-import '../services/api_service.dart';
 import 'feed_provider.dart';
 
-final accountsProvider = AsyncNotifierProvider<AccountsNotifier, List<Account>>(
-  AccountsNotifier.new,
-);
+class AccountsFilterParams {
+  final bool excludeFriends;
+  final bool onlyFriends;
 
-class AccountsNotifier extends AsyncNotifier<List<Account>> {
+  const AccountsFilterParams({
+    this.excludeFriends = false,
+    this.onlyFriends = false,
+  });
+}
+
+class AccountsNotifier extends FamilyAsyncNotifier<List<Account>, AccountsFilterParams> {
   @override
-  Future<List<Account>> build() async {
+  Future<List<Account>> build(AccountsFilterParams params) async {
     final api = ref.watch(apiServiceProvider);
-    return await api.getAccounts(excludeFriends: true);
+    return await api.getAccounts(
+      excludeFriends: params.excludeFriends,
+      onlyFriends: params.onlyFriends,
+    );
   }
 }
+
+final accountsProvider = AsyncNotifierProviderFamily<AccountsNotifier, List<Account>, AccountsFilterParams>(
+  AccountsNotifier.new,
+);
