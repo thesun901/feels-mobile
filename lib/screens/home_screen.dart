@@ -4,13 +4,28 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../services/api_service.dart';
 import './feed_screen.dart';
 
-// Provider for managing selected tab index
 final selectedIndexProvider = StateProvider<int>((ref) => 0);
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   final int? initialIndex;
 
   const HomeScreen({super.key, this.initialIndex});
+
+  @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialIndex != null) {
+      // Delay provider update until after build
+      Future.microtask(() {
+        ref.read(selectedIndexProvider.notifier).state = widget.initialIndex!;
+      });
+    }
+  }
 
   final List<Widget> screens = const [
     Center(child: Text('Home Screen')),
@@ -19,15 +34,8 @@ class HomeScreen extends ConsumerWidget {
   ];
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final indexNotifier = ref.read(selectedIndexProvider.notifier);
-
-    // Set initial index if provided (once)
-    if (initialIndex != null &&
-        ref.read(selectedIndexProvider) != initialIndex) {
-      indexNotifier.state = initialIndex!;
-    }
-
     final selectedIndex = ref.watch(selectedIndexProvider);
 
     return Scaffold(
