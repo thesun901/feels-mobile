@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../models/account.dart';
 import '../models/friend_request.dart';
 import '../models/post.dart';
 
@@ -39,6 +40,23 @@ class ApiService {
       return data.map((e) => FriendRequest.fromJson(e)).toList();
     } else {
       throw Exception('Failed to load friend requests: ${response.statusCode}');
+    }
+  }
+
+  Future<List<Account>> getAccounts() async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/accounts/'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final List<dynamic> data = json['accounts'];
+      return data.map((e) => Account.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load accounts: ${response.statusCode}');
     }
   }
 
