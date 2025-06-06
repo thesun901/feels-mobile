@@ -29,7 +29,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   final List<Widget> screens = const [
-    Center(child: Text('Home Screen')),
+    FriendsScreen(),
     FeedScreen(),
     Center(child: Text('Profile Screen')),
   ];
@@ -115,18 +115,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.group, color: AppColors.textLight),
-              title: const Text(
-                'Friends',
-                style: TextStyle(color: AppColors.textLight),
-              ),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const FriendsScreen()),
-                );
-              },
-            ),
-            ListTile(
               leading: const Icon(Icons.settings, color: AppColors.textLight),
               title: const Text(
                 'Settings',
@@ -167,9 +155,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           BottomNavigationBarItem(
             icon: Container(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: const Icon(Icons.chat_sharp),
+              child: const Icon(Icons.people_alt_outlined),
             ),
-            label: 'Chats',
+            label: 'Friends',
           ),
           BottomNavigationBarItem(
             icon: Container(
