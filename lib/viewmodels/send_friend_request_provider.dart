@@ -13,11 +13,8 @@ class SendFriendRequestNotifier extends AsyncNotifier<void> {
   }) async {
     state = const AsyncLoading();
     final api = ref.read(apiServiceProvider);
-    // TODO: UWAGA PROWIZORKA !!!
-    final token = 'vgv_Wk7sCJhlpwlzjlFbSxTfZIhH9C3ll30mEXyMMss';
     try {
       await api.sendFriendRequest(
-        token: token,
         receiverUid: receiverUid,
         message: message,
       );

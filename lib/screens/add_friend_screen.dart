@@ -278,6 +278,7 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
                                     const SnackBar(content: Text('Invitation sent!')),
                                   );
                                 }
+                                return;
                               } catch (e) {
                                 if (mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
