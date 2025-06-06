@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'screens/feed_screen.dart';
+import 'screens/login_screen.dart';
+import 'services/auth_service.dart';
 import 'constants/colors.dart';
 
 void main() {
@@ -9,6 +11,11 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  Future<Widget> _checkAuth() async {
+    final loggedIn = await AuthService.isLoggedIn();
+    return loggedIn ? const FeedScreen() : const LoginScreen();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +34,18 @@ class MyApp extends StatelessWidget {
           displayColor: AppColors.textLight,
         ),
       ),
-      home: const FeedScreen(),
+      home: FutureBuilder<Widget>(
+        future: _checkAuth(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return snapshot.data!;
+          } else {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+        },
+      ),
     );
   }
 }
