@@ -13,6 +13,7 @@ class PostCard extends StatelessWidget {
     // Zamiana koloru HEX na Color
     final Color feelingColor = Color(int.parse(post.feeling.color.replaceFirst('#', '0xff')));
     final String feelingName = post.feeling.name;
+    final String emoji = post.feeling.emoji;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -53,7 +54,7 @@ class PostCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${post.authorUsername} feels... $feelingName',
+                  '${post.authorUsername} feels... $feelingName $emoji',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
