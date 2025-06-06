@@ -11,7 +11,8 @@ class FriendRequestsNotifier extends AsyncNotifier<List<FriendRequest>> {
   Future<List<FriendRequest>> build() async {
     final api = ref.watch(apiServiceProvider);
     // TODO: UWAGA PROWIZORKA !!!
-    final token = 'dPyoEDWfT76E23qwt6wkvkSvjbyd8ick8ENfDGRvWUw';
+    final token = 'vgv_Wk7sCJhlpwlzjlFbSxTfZIhH9C3ll30mEXyMMss';
     return await api.getPendingFriendRequests(token);
   }
 }
+

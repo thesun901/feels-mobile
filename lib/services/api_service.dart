@@ -43,6 +43,29 @@ class ApiService {
     }
   }
 
+  Future<void> sendFriendRequest({
+    required String token,
+    required String receiverUid,
+    String? message,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/friend-requests/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'receiver_uid': receiverUid,
+        if (message != null) 'message': message,
+      }),
+    );
+
+    if (response.statusCode != 201) {
+      final json = jsonDecode(response.body);
+      throw Exception(json['error'] ?? 'Failed to send friend request');
+    }
+  }
+
   Future<List<Account>> getAccounts() async {
     final response = await _client.get(
       Uri.parse('$baseUrl/accounts/'),
