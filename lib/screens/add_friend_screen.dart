@@ -4,6 +4,7 @@ import '../constants/colors.dart';
 import '../viewmodels/friend_request_provider.dart';
 import '../viewmodels/accounts_provider.dart';
 import '../models/account.dart';
+import '../viewmodels/send_friend_request_provider.dart';
 
 class AddFriendScreen extends ConsumerStatefulWidget {
   const AddFriendScreen({super.key});
@@ -44,6 +45,8 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
   Widget build(BuildContext context) {
     final friendRequests = ref.watch(friendRequestsProvider);
     final accountsAsync = ref.watch(accountsProvider);
+    final sendRequest = ref.watch(sendFriendRequestProvider);
+    final sendRequestNotifier = ref.read(sendFriendRequestProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -263,8 +266,25 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
                               Icons.add_circle,
                               color: AppColors.peaceful,
                             ),
-                            onPressed: () {
-                              // TODO: wyślij request
+                            onPressed: sendRequest.isLoading
+                                ? null
+                                : () async {
+                              try {
+                                await sendRequestNotifier.send(
+                                  receiverUid: user.uid,
+                                );
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Invitation sent!')),
+                                  );
+                                }
+                              } catch (e) {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Błąd: $e')),
+                                  );
+                                }
+                              }
                             },
                           ),
                         ),
