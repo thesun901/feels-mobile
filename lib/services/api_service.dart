@@ -97,6 +97,7 @@ class ApiService {
       final data = jsonDecode(response.body);
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', data['token']);
+      await prefs.setString('uid', data['user']['uid']);
       await prefs.setString('username', data['user']['username']);
       await prefs.setString('email', data['user']['email']);
       await prefs.setString('display_name', data['user']['display_name']);
@@ -121,6 +122,10 @@ class ApiService {
       final data = jsonDecode(response.body);
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', data['token']);
+      await prefs.setString('uid', data['user']['uid']);
+      await prefs.setString('username', data['user']['username']);
+      await prefs.setString('email', data['user']['email']);
+      await prefs.setString('display_name', data['user']['display_name']);
       return true;
     } else {
       return false;
@@ -142,6 +147,7 @@ class ApiService {
     await prefs.remove('username');
     await prefs.remove('email');
     await prefs.remove('display_name');
+    await prefs.remove('uid');
   }
 
   static Future<bool> isLoggedIn() async {
@@ -200,6 +206,66 @@ class ApiService {
     if (response.statusCode != 201) {
       final json = jsonDecode(response.body);
       throw Exception(json['error'] ?? 'Failed to send friend request');
+    }
+  }
+
+  Future<Account> getAccount({
+    required String? accountUid,
+    required String? accountUsername,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    var uid = accountUid;
+
+    if ((uid == null || uid.isEmpty) &&
+        (accountUsername == null || accountUsername.isEmpty)) {
+      uid = prefs.getString('uid');
+      if (uid == null || uid.isEmpty) {
+        throw Exception(
+          'No account UID or username provided and no user is logged in',
+        );
+      }
+    }
+
+    if (token == null || token.isEmpty) {
+      throw Exception('User not authenticated');
+    }
+
+    if (uid != null && uid.isNotEmpty) {
+      final response = await _client.get(
+        Uri.parse('$baseUrl/accounts/$uid/'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        return Account.fromJson(json);
+      } else {
+        throw Exception('Failed to load profile: ${response.statusCode}');
+      }
+    }
+
+    final response = await _client.get(
+      Uri.parse('$baseUrl/accounts/?username=$accountUsername'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final List<dynamic> data = json['accounts'];
+      if (data.isEmpty) {
+        throw Exception('No account found with username: $accountUsername');
+      }
+      return Account.fromJson(data.first);
+    } else {
+      throw Exception('Failed to load account: ${response.statusCode}');
     }
   }
 

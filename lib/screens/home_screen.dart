@@ -102,7 +102,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 'My profile',
                 style: TextStyle(color: AppColors.textLight),
               ),
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pushNamed('/profile');
+              },
             ),
             ListTile(
               leading: const Icon(Icons.person_add, color: AppColors.textLight),

@@ -1,3 +1,4 @@
+import 'package:feels_mobile/widgets/profile_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/post.dart';
@@ -62,13 +63,10 @@ class PostCard extends StatelessWidget {
                     CircleAvatar(
                       radius: 25,
                       backgroundColor: feelingColor,
-                      child: CircleAvatar(
-                        backgroundColor: AppColors.textDim,
-                        child: Icon(
-                          Icons.person,
-                          color: AppColors.cardBackground,
-                        ),
-                      ),
+                      child: ProfilePicture(
+                        size: 20,
+                        username: post.authorUsername,
+                      )
                     ),
                     const SizedBox(width: 20),
                     Column(

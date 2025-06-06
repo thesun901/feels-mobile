@@ -1,3 +1,4 @@
+import 'package:feels_mobile/widgets/profile_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../constants/colors.dart';
@@ -113,12 +114,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
                           horizontal: 12,
                           vertical: 8,
                         ),
-                        leading: const CircleAvatar(
-                          backgroundColor: AppColors.textDim,
-                          child: Icon(
-                            Icons.person,
-                            color: AppColors.cardBackground,
-                          ),
+                        leading: ProfilePicture(
+                          username: friend.username,
                         ),
                         title: Text(
                           friend.displayName,

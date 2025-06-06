@@ -1,3 +1,4 @@
+import 'screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'screens/home_screen.dart';
@@ -35,6 +36,9 @@ class MyApp extends StatelessWidget {
           bodyColor: AppColors.textLight,
           displayColor: AppColors.textLight,
         ),
+        popupMenuTheme: ThemeData().popupMenuTheme.copyWith(
+          color: AppColors.darkBackground
+        )
       ),
       routes: {
         '/friends': (context) => const HomeScreen(initialIndex: 0),
@@ -43,6 +47,7 @@ class MyApp extends StatelessWidget {
         '/add_friend': (context) => AddFriendScreen(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
+        '/profile': (context) => const ProfileScreen(isOwnProfile: true)
       },
       home: FutureBuilder<Widget>(
         future: _checkAuth(),
