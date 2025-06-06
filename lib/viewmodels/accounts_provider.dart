@@ -12,6 +12,6 @@ class AccountsNotifier extends AsyncNotifier<List<Account>> {
   @override
   Future<List<Account>> build() async {
     final api = ref.watch(apiServiceProvider);
-    return await api.getAccounts();
+    return await api.getAccounts(excludeFriends: true);
   }
 }

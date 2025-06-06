@@ -51,6 +51,32 @@ class ApiService {
     }
   }
 
+  Future<void> respondToFriendRequest({
+    required String requestId,
+    required String action, // 'accept' lub 'reject'
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('User not authenticated');
+    }
+
+    final response = await _client.put(
+      Uri.parse('$baseUrl/friend-requests/$requestId/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'action': action}),
+    );
+
+    if (response.statusCode != 200) {
+      final json = jsonDecode(response.body);
+      throw Exception(json['error'] ?? 'Failed to respond to friend request');
+    }
+  }
+
   static Future<bool> register(
     String username,
     String password,
@@ -176,13 +202,20 @@ class ApiService {
     }
   }
 
-  Future<List<Account>> getAccounts() async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/accounts/'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+  Future<List<Account>> getAccounts({bool excludeFriends = false}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    final uri = Uri.parse(
+      '$baseUrl/accounts/${excludeFriends ? '?exclude_friends=true' : ''}',
     );
+
+    final headers = {
+      'Content-Type': 'application/json',
+      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+    };
+
+    final response = await _client.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);

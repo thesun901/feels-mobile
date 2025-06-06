@@ -4,6 +4,7 @@ import '../constants/colors.dart';
 import '../viewmodels/friend_request_provider.dart';
 import '../viewmodels/accounts_provider.dart';
 import '../models/account.dart';
+import '../viewmodels/respond_to_friend_request_provider.dart';
 import '../viewmodels/send_friend_request_provider.dart';
 
 class AddFriendScreen extends ConsumerStatefulWidget {
@@ -97,99 +98,144 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
                 'Błąd: $err',
                 style: const TextStyle(color: AppColors.angry),
               ),
-              data: (requests) => requests.isNotEmpty
-                  ? Column(
-                children: [
-                  Row(
-                    children: const [
-                      Text(
-                        'Requests',
-                        style: TextStyle(
-                          color: AppColors.textLight,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  ...requests.map(
-                        (req) => Container(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppColors.cardBackground.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        leading: CircleAvatar(
-                          backgroundColor: AppColors.textDim,
-                          child: const Icon(
-                            Icons.person,
-                            color: AppColors.cardBackground,
-                          ),
-                        ),
-                        title: Text(
-                          req.sender.username,
-                          style: const TextStyle(
+              data: (requests) {
+                final pendingRequests = requests.where((req) => req.status == 'pending').toList();
+                return pendingRequests.isNotEmpty
+                    ? Column(
+                  children: [
+                    Row(
+                      children: const [
+                        Text(
+                          'Requests',
+                          style: TextStyle(
                             color: AppColors.textLight,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        subtitle: Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 0,
-                            vertical: 2,
-                          ),
-                          child: const Text(
-                            'New friend request!',
-                            style: TextStyle(
-                              color: AppColors.peaceful,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    ...pendingRequests.map(
+                          (req) => Container(
+                        margin: const EdgeInsets.symmetric(vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.cardBackground.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.close,
-                                color: AppColors.textDim,
-                              ),
-                              onPressed: () {
-                                // TODO: odrzuć request
-                              },
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          leading: CircleAvatar(
+                            backgroundColor: AppColors.textDim,
+                            child: const Icon(
+                              Icons.person,
+                              color: AppColors.cardBackground,
                             ),
-                            Container(
-                              width: 1,
-                              height: 30,
-                              color: AppColors.textDim.withOpacity(0.4),
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                              ),
+                          ),
+                          title: Text(
+                            req.sender.username,
+                            style: const TextStyle(
+                              color: AppColors.textLight,
                             ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.check,
+                          ),
+                          subtitle: Container(
+                            margin: const EdgeInsets.only(top: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 0,
+                              vertical: 2,
+                            ),
+                            child: const Text(
+                              'New friend request!',
+                              style: TextStyle(
                                 color: AppColors.peaceful,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
                               ),
-                              onPressed: () {
-                                // TODO: zaakceptuj request
-                              },
                             ),
-                          ],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: AppColors.textDim,
+                                ),
+                                onPressed: () async {
+                                  try {
+                                    await ref.read(
+                                      respondToFriendRequestProvider(
+                                        RespondToFriendRequestParams(
+                                          requestId: req.uid,
+                                          action: 'reject',
+                                        ),
+                                      ).future,
+                                    );
+                                    ref.invalidate(friendRequestsProvider);
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Invitation rejected')),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Błąd: $e')),
+                                      );
+                                    }
+                                  }
+                                },
+                              ),
+                              Container(
+                                width: 1,
+                                height: 30,
+                                color: AppColors.textDim.withOpacity(0.4),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.check,
+                                  color: AppColors.peaceful,
+                                ),
+                                onPressed: () async {
+                                  try {
+                                    await ref.read(
+                                      respondToFriendRequestProvider(
+                                        RespondToFriendRequestParams(
+                                          requestId: req.uid,
+                                          action: 'accept',
+                                        ),
+                                      ).future,
+                                    );
+                                    ref.invalidate(friendRequestsProvider);
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Invitation accepted')),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Błąd: $e')),
+                                      );
+                                    }
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-              )
-                  : const SizedBox(),
+                    const SizedBox(height: 24),
+                  ],
+                )
+                    : const SizedBox();
+              },
             ),
             Divider(
               color: AppColors.textDim.withOpacity(0.2),
