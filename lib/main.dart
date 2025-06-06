@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       routes: {
-        '/chats': (context) => const HomeScreen(initialIndex: 0),
+        '/friends': (context) => const HomeScreen(initialIndex: 0),
         '/feed': (context) => const HomeScreen(initialIndex: 1),
         '/stats': (context) => const HomeScreen(initialIndex: 2),
         '/add_friend': (context) => AddFriendScreen(),

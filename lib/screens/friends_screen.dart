@@ -45,119 +45,122 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
       accountsProvider(const AccountsFilterParams(onlyFriends: true)),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.cardBackground,
-        title: const Text(
-          'Your Friends',
-          style: TextStyle(color: AppColors.textLight),
-        ),
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: AppColors.textLight),
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: SizedBox(
-                width: 400,
-                child: TextField(
-                  controller: _searchController,
-                  focusNode: _searchFocusNode,
-                  style: const TextStyle(color: AppColors.textLight),
-                  decoration: InputDecoration(
-                    hintText: 'Search friends...',
-                    hintStyle: const TextStyle(color: AppColors.textDim),
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      color: AppColors.textDim,
-                    ),
-                    filled: true,
-                    fillColor: _isSearchFocused
-                        ? AppColors.cardBackground.withOpacity(0.5)
-                        : AppColors.cardBackground,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32),
-                      borderSide: BorderSide.none,
-                    ),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: SizedBox(
+              width: 400,
+              child: TextField(
+                controller: _searchController,
+                focusNode: _searchFocusNode,
+                style: const TextStyle(color: AppColors.textLight),
+                decoration: InputDecoration(
+                  hintText: 'Search friends...',
+                  hintStyle: const TextStyle(color: AppColors.textDim),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: AppColors.textDim,
+                  ),
+                  filled: true,
+                  fillColor: _isSearchFocused
+                      ? AppColors.cardBackground.withValues(alpha: 0.5)
+                      : AppColors.cardBackground,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(32),
+                    borderSide: BorderSide.none,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: accountsAsync.when(
-                data: (friends) {
-                  final filtered = friends.where((a) =>
-                  a.displayName.toLowerCase().contains(_searchQuery) ||
-                      a.username.toLowerCase().contains(_searchQuery)
-                  ).toList();
+          ),
+          const SizedBox(height: 24),
+          Expanded(
+            child: accountsAsync.when(
+              data: (friends) {
+                final filtered = friends
+                    .where(
+                      (a) =>
+                          a.displayName.toLowerCase().contains(_searchQuery) ||
+                          a.username.toLowerCase().contains(_searchQuery),
+                    )
+                    .toList();
 
-                  if (filtered.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'No friends.',
-                        style: TextStyle(color: AppColors.textDim),
+                if (filtered.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'No friends.',
+                      style: TextStyle(color: AppColors.textDim),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: filtered.length,
+                  itemBuilder: (context, index) {
+                    final friend = filtered[index];
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.cardBackground.withValues(alpha: 0.8),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    );
-                  }
-
-                  return ListView.builder(
-                    itemCount: filtered.length,
-                    itemBuilder: (context, index) {
-                      final friend = filtered[index];
-                      return Container(
-                        margin: const EdgeInsets.symmetric(vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.cardBackground.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(12),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
                         ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
+                        leading: const CircleAvatar(
+                          backgroundColor: AppColors.textDim,
+                          child: Icon(
+                            Icons.person,
+                            color: AppColors.cardBackground,
                           ),
-                          leading: const CircleAvatar(
-                            backgroundColor: AppColors.textDim,
-                            child: Icon(
-                              Icons.person,
-                              color: AppColors.cardBackground,
-                            ),
+                        ),
+                        title: Text(
+                          friend.displayName,
+                          style: const TextStyle(color: AppColors.textLight),
+                        ),
+                        subtitle: Text(
+                          friend.username,
+                          style: const TextStyle(
+                            color: AppColors.textDim,
+                            fontSize: 12,
                           ),
-                          title: Text(
-                            friend.displayName,
-                            style: const TextStyle(
-                              color: AppColors.textLight,
-                            ),
-                          ),
-                          subtitle: Text(
-                            friend.username,
-                            style: const TextStyle(
-                              color: AppColors.textDim,
-                              fontSize: 12,
-                            ),
-                          ),
-                          trailing: PopupMenuButton<String>(
-                            onSelected: (value) async {
-                              if (value == 'unfriend') {
-                                final confirmed = await showDialog<bool>(
-                                  context: context,
-                                  builder: (ctx) => AlertDialog(
-                                    title: const Text('Unfriend'),
-                                    content: Text('Are you sure you want to unfriend ${friend.displayName}?'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(ctx, false),
-                                        child: const Text('Cancel'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(ctx, true),
-                                        child: const Text('Delete'),
-                                      ),
-                                    ],
+                        ),
+                        trailing: PopupMenuButton<String>(
+                          onSelected: (value) async {
+                            if (value == 'unfriend') {
+                              final confirmed = await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Unfriend'),
+                                  content: Text(
+                                    'Are you sure you want to unfriend ${friend.displayName}?',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(ctx, false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(ctx, true),
+                                      child: const Text('Delete'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (confirmed == true) {
+                                final api = ref.read(apiServiceProvider);
+                                // await api.unfriend(friend.uid);
+                                ref.invalidate(
+                                  accountsProvider(
+                                    const AccountsFilterParams(
+                                      onlyFriends: true,
+                                    ),
                                   ),
                                 );
                                 if (confirmed == true) {
@@ -180,30 +183,30 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
                                   }
                                 }
                               }
-                            },
-                            itemBuilder: (context) => [
-                              const PopupMenuItem(
-                                value: 'unfriend',
-                                child: Text('Delete Friend'),
-                              ),
-                            ],
-                          ),
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: 'unfriend',
+                              child: Text('Delete Friend'),
+                            ),
+                          ],
                         ),
-                      );
-                    },
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(
-                  child: Text(
-                    'Błąd: $e',
-                    style: const TextStyle(color: AppColors.angry),
-                  ),
+                      ),
+                    );
+                  },
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(
+                child: Text(
+                  'Błąd: $e',
+                  style: const TextStyle(color: AppColors.angry),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
