@@ -10,8 +10,9 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const feelingName = 'Angry';
-    const feelingEmoji = '😡';
+    // Zamiana koloru HEX na Color
+    final Color feelingColor = Color(int.parse(post.feeling.color.replaceFirst('#', '0xff')));
+    final String feelingName = post.feeling.name;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -28,11 +29,11 @@ class PostCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Pasek emocji
+          // Pasek emocji z dynamicznym kolorem i nazwą
           Container(
-            decoration: const BoxDecoration(
-              color: AppColors.angry,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            decoration: BoxDecoration(
+              color: feelingColor,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             alignment: Alignment.centerRight,
@@ -52,7 +53,7 @@ class PostCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${post.authorUsername} feels... $feelingName $feelingEmoji',
+                  '${post.authorUsername} feels... $feelingName',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
