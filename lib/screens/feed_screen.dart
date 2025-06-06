@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../constants/colors.dart';
 import '../viewmodels/feed_provider.dart';
+import '../services/api_service.dart';
 import '../widgets/post_card.dart';
-import 'add_friend_screen.dart';
 
 class FeedScreen extends HookConsumerWidget {
   const FeedScreen({super.key});
@@ -36,7 +36,7 @@ class FeedScreen extends HookConsumerWidget {
               leading: const Icon(Icons.person_add, color: AppColors.textLight),
               title: const Text('Add friend', style: TextStyle(color: AppColors.textLight)),
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AddFriendScreen()));
+                Navigator.of(context).pushNamed('/add_friend');
               },
             ),
             ListTile(
@@ -53,6 +53,14 @@ class FeedScreen extends HookConsumerWidget {
               leading: const Icon(Icons.info, color: AppColors.textLight),
               title: const Text('About', style: TextStyle(color: AppColors.textLight)),
               onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout, color: AppColors.textLight),
+              title: const Text('Logout', style: TextStyle(color: AppColors.textLight)),
+              onTap: () {
+                ApiService.logout();
+                Navigator.of(context).pushReplacementNamed('/login');
+              },
             ),
           ],
         ),

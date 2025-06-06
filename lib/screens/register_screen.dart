@@ -1,35 +1,37 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final usernameController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
   String? error;
 
-  Future<void> handleLogin() async {
-    final success = await ApiService.login(
+  Future<void> handleRegister() async {
+    final success = await ApiService.register(
       usernameController.text.trim(),
+      emailController.text.trim(),
       passwordController.text,
     );
 
     if (success) {
       Navigator.of(context).pushReplacementNamed('/feed');
     } else {
-      setState(() => error = 'Login failed. Check your credentials.');
+      setState(() => error = 'Registration failed. Try different credentials.');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: const Text('Register')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -41,20 +43,18 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: const InputDecoration(labelText: 'Username'),
             ),
             TextField(
+              controller: emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+            ),
+            TextField(
               controller: passwordController,
               decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: handleLogin,
-              child: const Text('Login'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed('/register');
-              },
-              child: const Text("Don't have an account? Register"),
+              onPressed: handleRegister,
+              child: const Text('Register'),
             ),
           ],
         ),
