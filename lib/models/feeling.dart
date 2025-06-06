@@ -1,3 +1,6 @@
+// lib/models/feeling.dart
+import '../constants/feeling_emojis.dart';
+
 class Feeling {
   final String name;
   final String color;
@@ -13,4 +16,6 @@ class Feeling {
       color: json['color'],
     );
   }
+
+  String get emoji => feelingEmojis[name] ?? '';
 }
