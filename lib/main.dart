@@ -48,8 +48,8 @@ class MyApp extends StatelessWidget {
         '/add_friend': (context) => AddFriendScreen(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
-        '/profile': (context) => const ProfileScreen(isOwnProfile: true),
         '/add_status': (context) => const AddStatusScreen(),
+        '/profile': (context) => const ProfileScreen()
       },
       home: FutureBuilder<Widget>(
         future: _checkAuth(),
