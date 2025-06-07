@@ -9,31 +9,32 @@ class FeedScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final feed = ref.watch(feedProvider);
+    final feedAsync = ref.watch(feedProvider);
 
     return Scaffold(
-      body: feed.when(
+      body: feedAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Error: $err')),
-        data: (posts) => ListView.builder(
-          itemCount: posts.length,
-          itemBuilder: (context, index) {
-            final post = posts[index];
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [PostCard(post: post)],
-            );
-          },
+        error: (err, _) => Center(child: Text('Error: \$err')),
+        data: (posts) => RefreshIndicator(
+          onRefresh: () => ref.refresh(feedProvider.future),
+          child: ListView.builder(
+            itemCount: posts.length,
+            itemBuilder: (context, index) {
+              final post = posts[index];
+              return PostCard(post: post);
+            },
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/add_status');
+        onPressed: () async {
+          // Navigate to add status screen, then refresh feed on return
+          await Navigator.pushNamed(context, '/add_status');
+          // ignore: unused_result
+          await ref.refresh(feedProvider.future);
         },
         backgroundColor: AppColors.peaceful,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: const Icon(Icons.add, size: 32),
       ),
     );

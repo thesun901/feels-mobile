@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,9 +12,23 @@ final feedProvider = AsyncNotifierProvider<FeedNotifier, List<Post>>(
 );
 
 class FeedNotifier extends AsyncNotifier<List<Post>> {
+  Timer? _timer;
+
   @override
   Future<List<Post>> build() async {
     final api = ref.watch(apiServiceProvider);
+
+    // Schedule automatic refresh every 120 seconds
+    _timer = Timer.periodic(const Duration(seconds: 120), (_) {
+      // Invalidate this provider so build() runs again
+      ref.invalidateSelf();
+    });
+    // Cancel timer when provider is disposed
+    ref.onDispose(() {
+      _timer?.cancel();
+    });
+
+    // Initial data fetch
     final posts = await api.getPosts();
     return posts;
   }
