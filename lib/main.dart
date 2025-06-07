@@ -1,4 +1,5 @@
-import 'screens/profile_screen.dart';
+import 'package:feels_mobile/screens/add_status_screen.dart';
+import 'package:feels_mobile/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'screens/home_screen.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/profile': (context) => const ProfileScreen(isOwnProfile: true)
+        '/add_status': (context) => const AddStatusScreen(),
       },
       home: FutureBuilder<Widget>(
         future: _checkAuth(),
