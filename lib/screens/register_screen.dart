@@ -29,8 +29,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     final success = await ApiService.register(
       usernameController.text.trim(),
-      emailController.text.trim(),
       passwordController.text,
+      emailController.text.trim(),
     );
 
     if (success) {

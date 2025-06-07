@@ -1,3 +1,4 @@
+import 'package:feels_mobile/widgets/profile_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../constants/colors.dart';
@@ -82,7 +83,7 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
                     ),
                     filled: true,
                     fillColor: _isSearchFocused
-                        ? AppColors.cardBackground.withOpacity(0.5)
+                        ? AppColors.cardBackground.withValues(alpha: 0.5)
                         : AppColors.cardBackground,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(32),
@@ -122,9 +123,7 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
                             (req) => Container(
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               decoration: BoxDecoration(
-                                color: AppColors.cardBackground.withOpacity(
-                                  0.8,
-                                ),
+                                color: AppColors.cardBackground.withValues(alpha: 0.8),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: ListTile(
@@ -132,13 +131,7 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
                                   horizontal: 12,
                                   vertical: 8,
                                 ),
-                                leading: CircleAvatar(
-                                  backgroundColor: AppColors.textDim,
-                                  child: const Icon(
-                                    Icons.person,
-                                    color: AppColors.cardBackground,
-                                  ),
-                                ),
+                                leading: ProfilePicture(uid: req.uid),
                                 title: Text(
                                   req.sender.username,
                                   style: const TextStyle(
@@ -208,7 +201,7 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
                                     Container(
                                       width: 1,
                                       height: 30,
-                                      color: AppColors.textDim.withOpacity(0.4),
+                                      color: AppColors.textDim.withValues(alpha: 0.4),
                                       margin: const EdgeInsets.symmetric(
                                         horizontal: 4,
                                       ),
@@ -267,7 +260,7 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
               },
             ),
             Divider(
-              color: AppColors.textDim.withOpacity(0.2),
+              color: AppColors.textDim.withValues(alpha: 0.2),
               thickness: 1,
               height: 10,
             ),
@@ -313,7 +306,7 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
                           (user) => Container(
                             margin: const EdgeInsets.symmetric(vertical: 6),
                             decoration: BoxDecoration(
-                              color: AppColors.cardBackground.withOpacity(0.8),
+                              color: AppColors.cardBackground.withValues(alpha: 0.8),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: ListTile(
@@ -321,13 +314,7 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
                                 horizontal: 12,
                                 vertical: 8,
                               ),
-                              leading: CircleAvatar(
-                                backgroundColor: AppColors.textDim,
-                                child: const Icon(
-                                  Icons.person,
-                                  color: AppColors.cardBackground,
-                                ),
-                              ),
+                              leading: ProfilePicture(uid: user.uid),
                               title: Text(
                                 user.username,
                                 style: const TextStyle(

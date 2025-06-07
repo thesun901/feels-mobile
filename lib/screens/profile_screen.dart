@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/colors.dart';
 import '../viewmodels/account_provider.dart';
 import '../viewmodels/accounts_provider.dart';
+import '../viewmodels/send_friend_request_provider.dart';
+import '../viewmodels/friend_request_provider.dart';
 
 class ProfileScreen extends HookConsumerWidget {
   final String? accountUid;
@@ -26,8 +28,10 @@ class ProfileScreen extends HookConsumerWidget {
     );
 
     final prefs = SharedPreferences.getInstance();
-
     final myUid = useFuture(prefs.then((prefs) => prefs.getString('uid')));
+
+    final sendRequestNotifier = ref.read(sendFriendRequestProvider.notifier);
+    final friendRequests = ref.watch(friendRequestsProvider);
 
     return account.when(
       error: (err, stack) => Center(
@@ -46,15 +50,62 @@ class ProfileScreen extends HookConsumerWidget {
               friends.when(
                 data: (friendsList) {
                   final isFriend = friendsList.any(
-                    (f) => f.uid == accountData.uid,
+                        (f) => f.uid == accountData.uid,
                   );
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: TextButton(
-                      onPressed: isFriend ? null : null,
-                      // TODO: Implement add/remove friend functionality
-                      child: Text(isFriend ? 'Remove friend' : 'Add Friend'),
-                    ),
+
+                  return friendRequests.when(
+                    data: (requests) {
+                      final pendingRequest = requests.where(
+                            (req) => req.sender.uid == myUid.data &&
+                            req.receiver.uid == accountData.uid &&
+                            req.status == 'pending',
+                      ).firstOrNull; // Using firstOrNull instead of firstWhere with orElse
+
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: TextButton(
+                          onPressed: isFriend
+                              ? null
+                              : pendingRequest != null
+                              ? null
+                              : () async {
+                            try {
+                              await sendRequestNotifier.send(
+                                receiverUid: accountData.uid,
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Friend request sent!'),
+                                ),
+                              );
+                              ref.invalidate(friendRequestsProvider);
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: $e'),
+                                ),
+                              );
+                            }
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: isFriend
+                                ? AppColors.textDim
+                                : pendingRequest != null
+                                ? AppColors.textDim
+                                : AppColors.peaceful,
+                          ),
+                          child: Text(
+                            isFriend
+                                ? 'Friends'
+                                : pendingRequest != null
+                                ? 'Request Sent'
+                                : 'Add Friend',
+                          ),
+                        ),
+                      );
+                    },
+                    loading: () => const CircularProgressIndicator(),
+                    error: (err, stack) => Text('Error: $err'),
                   );
                 },
                 loading: () => const CircularProgressIndicator(),
@@ -119,8 +170,7 @@ class ProfileScreen extends HookConsumerWidget {
                     IconButton(
                       icon: const Icon(Icons.edit, size: 20),
                       tooltip: 'Edit bio',
-                      onPressed: () =>
-                          {}, // TODO: Implement edit bio functionality
+                      onPressed: () => {},
                     ),
                 ],
               ),
