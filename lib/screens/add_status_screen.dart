@@ -1,28 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../constants/colors.dart';
-import '../models/feeling.dart';
-import '../constants/feeling_emojis.dart';
-import '../viewmodels/add_post_provider.dart';
-import '../viewmodels/feelings_provider.dart';
-
-Map<String, Map<String, dynamic>> buildEmotionsMap(List<Feeling> feelings) {
-  final Map<String, Map<String, dynamic>> emotions = {};
-  for (final feeling in feelings) {
-    emotions[feeling.name] = {
-      'emoji': feelingEmojis[feeling.name] ?? '',
-      'color': _hexToColor(feeling.color),
-    };
-  }
-  return emotions;
-}
-
-Color _hexToColor(String hex) {
-  hex = hex.replaceFirst('#', '');
-  if (hex.length == 6) hex = 'FF$hex';
-  return Color(int.parse(hex, radix: 16));
-}
+import 'package:feels_mobile/constants/colors.dart';
+import 'package:feels_mobile/models/feeling.dart';
+import 'package:feels_mobile/viewmodels/add_post_provider.dart';
+import 'package:feels_mobile/viewmodels/feelings_provider.dart';
+import 'package:feels_mobile/widgets/add_status_screen/emotion_map_builder.dart';
+import 'package:feels_mobile/widgets/emotion_selector.dart';
 
 class AddStatusScreen extends HookConsumerWidget {
   const AddStatusScreen({super.key});
@@ -94,108 +78,60 @@ class AddStatusScreen extends HookConsumerWidget {
                 style: const TextStyle(color: Colors.red),
               )
             else
-              GestureDetector(
-                onTap: () async {
-                  final emotionKey = await showModalBottomSheet<String>(
-                    context: context,
-                    backgroundColor: AppColors.cardBackground,
-                    builder: (ctx) => ListView(
-                      shrinkWrap: true,
-                      children: emotions.entries.map((entry) {
-                        return ListTile(
-                          onTap: () => Navigator.pop(ctx, entry.key),
-                          title: Container(
-                            decoration: BoxDecoration(
-                              color: AppColors.tired.withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: EdgeInsets.zero,
-                            child: Row(
+              EmotionSelector(
+                feelings: feelingsState.feelings.map(Feeling.fromJson).toList(),
+                selectedEmotionKey: selectedEmotionKey,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardBackground,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.textDim),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      selectedEmotionKey.value != null &&
+                              emotions[selectedEmotionKey.value!] != null
+                          ? Row(
                               children: [
                                 Container(
-                                  width: 18,
-                                  height: 48,
+                                  width: 16,
+                                  height: 16,
                                   decoration: BoxDecoration(
-                                    color: entry.value['color'] as Color,
-                                    borderRadius: BorderRadius.circular(6),
+                                    color:
+                                        emotions[selectedEmotionKey
+                                                .value!]!['color']
+                                            as Color,
+                                    borderRadius: BorderRadius.circular(4),
                                   ),
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  entry.value['emoji'] as String,
-                                  style: const TextStyle(fontSize: 22),
-                                ),
-                                const SizedBox(width: 8),
-                                Container(
-                                  width: 2,
-                                  height: 28,
-                                  color: AppColors.textDim.withOpacity(0.3),
+                                  emotions[selectedEmotionKey.value!]!['emoji']
+                                      as String,
+                                  style: const TextStyle(fontSize: 18),
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  entry.key,
+                                  selectedEmotionKey.value!,
                                   style: const TextStyle(
                                     color: AppColors.textLight,
                                     fontSize: 16,
                                   ),
                                 ),
                               ],
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                        );
-                      }).toList(),
-                    ),
-                  );
-                  if (emotionKey != null) {
-                    selectedEmotionKey.value = emotionKey;
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: AppColors.cardBackground,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.textDim,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      selectedEmotionKey.value != null && emotions[selectedEmotionKey.value!] != null
-                          ? Row(
-                        children: [
-                          Container(
-                            width: 16,
-                            height: 16,
-                            decoration: BoxDecoration(
-                              color: emotions[selectedEmotionKey.value!]!['color'] as Color,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            emotions[selectedEmotionKey.value!]!['emoji'] as String,
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            selectedEmotionKey.value!,
-                            style: const TextStyle(
-                              color: AppColors.textLight,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      )
+                            )
                           : const Text(
-                        'Select emotion',
-                        style: TextStyle(
-                          color: AppColors.textDim,
-                          fontSize: 16,
-                        ),
-                      ),
+                              'Select emotion',
+                              style: TextStyle(
+                                color: AppColors.textDim,
+                                fontSize: 16,
+                              ),
+                            ),
                       const Icon(Icons.expand_more, color: AppColors.textDim),
                     ],
                   ),
@@ -208,14 +144,17 @@ class AddStatusScreen extends HookConsumerWidget {
               style: const TextStyle(color: AppColors.textLight),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: AppColors.cardBackground.withOpacity(0.8),
+                fillColor: AppColors.cardBackground.withValues(alpha: 0.8),
                 hintText: 'How are you today?',
                 hintStyle: const TextStyle(color: AppColors.textDim),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 16,
+                ),
               ),
             ),
             if (addPostState.error != null)
@@ -235,13 +174,15 @@ class AddStatusScreen extends HookConsumerWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: (selectedEmotionKey.value != null && !addPostState.isLoading)
+                onPressed:
+                    (selectedEmotionKey.value != null &&
+                        !addPostState.isLoading)
                     ? () async {
-                  await addPostNotifier.addPost(
-                    body: controller.text,
-                    feelingName: selectedEmotionKey.value,
-                  );
-                }
+                        await addPostNotifier.addPost(
+                          body: controller.text,
+                          feelingName: selectedEmotionKey.value,
+                        );
+                      }
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.peaceful,
@@ -250,10 +191,13 @@ class AddStatusScreen extends HookConsumerWidget {
                     borderRadius: BorderRadius.circular(14),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 child: const Text('Add status'),
-              )
+              ),
             ),
           ],
         ),

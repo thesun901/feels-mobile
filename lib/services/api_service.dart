@@ -504,6 +504,7 @@ class ApiService {
   Future<Message> sendMessage({
     required String chatId,
     required String text,
+    String? feelingName,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
@@ -518,7 +519,7 @@ class ApiService {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
-      body: jsonEncode({'text': text}),
+      body: jsonEncode(feelingName != null ? {'text': text, 'feeling_name': feelingName} : {'text': text}),
     );
 
     if (response.statusCode == 201) {
