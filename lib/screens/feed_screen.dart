@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../viewmodels/feed_provider.dart';
-import '../widgets/post_card.dart';
-import '../constants/colors.dart';
+import 'package:feels_mobile/viewmodels/feed_provider.dart';
+import 'package:feels_mobile/widgets/feed_screen/post_card.dart';
+import 'package:feels_mobile/constants/colors.dart';
 
 class FeedScreen extends HookConsumerWidget {
   const FeedScreen({super.key});

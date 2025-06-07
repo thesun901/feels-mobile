@@ -1,8 +1,8 @@
 import 'package:feels_mobile/widgets/profile_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../models/post.dart';
-import '../constants/colors.dart';
+import '../../models/post.dart';
+import '../../constants/colors.dart';
 
 class PostCard extends StatelessWidget {
   final Post post;

@@ -56,6 +56,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
+            const SizedBox(height: 15),
             AppCard(),
             DrawerItem(
               icon: Icons.person,
