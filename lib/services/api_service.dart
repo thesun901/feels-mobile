@@ -4,6 +4,8 @@ import '../models/account.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/friend_request.dart';
 import '../models/post.dart';
+import '../models/chat.dart';
+import '../models/message.dart';
 
 class ApiService {
   static const String baseUrl =
@@ -390,6 +392,136 @@ class ApiService {
     } else {
       final json = jsonDecode(response.body);
       throw Exception(json['error'] ?? 'Failed to create post');
+    }
+  }
+
+  Future<List<Chat>> getChats() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('User not authenticated');
+    }
+
+    final response = await _client.get(
+      Uri.parse('$baseUrl/chats/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final List<dynamic> data = json['chats'];
+      return data.map((e) => Chat.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load chats: ${response.statusCode}');
+    }
+  }
+
+  Future<Chat> getChat(String chatId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('User not authenticated');
+    }
+
+    final response = await _client.get(
+      Uri.parse('$baseUrl/chats/$chatId/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return Chat.fromJson(json);
+    } else {
+      throw Exception('Failed to load chat: ${response.statusCode}');
+    }
+  }
+
+  Future<Chat> createChat(String username) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('User not authenticated');
+    }
+
+    final response = await _client.post(
+      Uri.parse('$baseUrl/chats/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'participant_usernames': [username],
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      final json = jsonDecode(response.body);
+      return Chat.fromJson(json);
+    } else {
+      throw Exception('Failed to create chat: ${response.statusCode}');
+    }
+  }
+
+  Future<List<Message>> getMessages(String chatId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('User not authenticated');
+    }
+
+    final response = await _client.get(
+      Uri.parse('$baseUrl/chats/$chatId/messages/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final List<dynamic> data = json['messages'];
+      return data.map((e) => Message.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load messages: ${response.statusCode}');
+    }
+  }
+
+  Future<Message> sendMessage({
+    required String chatId,
+    required String text,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('User not authenticated');
+    }
+
+    final response = await _client.post(
+      Uri.parse('$baseUrl/chats/$chatId/messages/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'text': text}),
+    );
+
+    if (response.statusCode == 201) {
+      final json = jsonDecode(response.body);
+      return Message.fromJson(json);
+    } else {
+      final json = jsonDecode(response.body);
+      throw Exception(json['error'] ?? 'Failed to send message');
     }
   }
 
