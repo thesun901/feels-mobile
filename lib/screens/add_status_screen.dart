@@ -77,7 +77,7 @@ class AddStatusScreen extends HookConsumerWidget {
           children: [
             const SizedBox(height: 8),
             const Text(
-              'How do we feelin?',
+              'How we feelin?',
               style: TextStyle(
                 color: AppColors.textLight,
                 fontSize: 18,

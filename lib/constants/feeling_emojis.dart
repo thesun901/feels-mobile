@@ -19,4 +19,7 @@ final Map<String, String> feelingEmojis = {
   'Curious': '🧐',
   'Stressed': '😩',
   'Joyful': '🥳',
+  'Enthusiastic': '🎉',
+  'Relaxed': '😌',
+  'Tired': '😴',
 };
