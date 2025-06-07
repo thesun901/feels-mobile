@@ -29,8 +29,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     final success = await ApiService.register(
       usernameController.text.trim(),
-      emailController.text.trim(),
       passwordController.text,
+      emailController.text.trim(),
     );
 
     if (success) {
@@ -54,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
             child: Container(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
             ),
           ),
           Center(
@@ -62,7 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               padding: const EdgeInsets.all(24.0),
               child: Card(
                 elevation: 6,
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black.withValues(alpha: 0.8),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 16.0),

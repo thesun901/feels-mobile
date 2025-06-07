@@ -138,7 +138,7 @@ class ApiService {
 
     if (token != null) {
       await http.delete(
-        Uri.parse(baseUrl),
+        Uri.parse('$baseUrl/auth/'),
         headers: {'Authorization': 'Bearer $token'},
       );
     }
