@@ -368,4 +368,39 @@ class ApiService {
       throw Exception(json['error'] ?? 'Failed to create post');
     }
   }
+
+  Future<Account> updateProfile({
+    String? displayName,
+    String? bio,
+    String? email,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('User not authenticated');
+    }
+
+    final Map<String, dynamic> payload = {};
+    if (displayName != null) payload['display_name'] = displayName;
+    if (bio != null) payload['bio'] = bio;
+    if (email != null) payload['email'] = email;
+
+    final response = await _client.put(
+      Uri.parse('$baseUrl/profile/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(payload),
+    );
+
+    final json = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      return Account.fromJson(json['user']);
+    } else {
+      throw Exception(json['error'] ?? 'Failed to update profile');
+    }
+  }
 }
