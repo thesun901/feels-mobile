@@ -3,12 +3,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../constants/colors.dart';
-import '../viewmodels/account_provider.dart';
-import '../viewmodels/accounts_provider.dart';
-import '../viewmodels/edit_profile_provider.dart';
-import '../viewmodels/send_friend_request_provider.dart';
-import '../viewmodels/friend_request_provider.dart';
+import 'package:feels_mobile/constants/colors.dart';
+import 'package:feels_mobile/viewmodels/account_provider.dart';
+import 'package:feels_mobile/viewmodels/accounts_provider.dart';
+import 'package:feels_mobile/viewmodels/edit_profile_provider.dart';
+import 'package:feels_mobile/viewmodels/send_friend_request_provider.dart';
+import 'package:feels_mobile/viewmodels/friend_request_provider.dart';
 
 class ProfileScreen extends HookConsumerWidget {
   final String? accountUid;

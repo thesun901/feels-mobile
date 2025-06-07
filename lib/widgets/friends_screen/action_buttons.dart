@@ -1,14 +1,63 @@
-import 'package:feels_mobile/models/account.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import '../../viewmodels/accounts_provider.dart';
-import '../../viewmodels/unfriend_provider.dart';
+import 'package:feels_mobile/models/chat.dart';
+import 'package:feels_mobile/models/account.dart';
+import 'package:feels_mobile/screens/chat_screen.dart';
+import 'package:feels_mobile/viewmodels/accounts_provider.dart';
+import 'package:feels_mobile/viewmodels/unfriend_provider.dart';
+import 'package:feels_mobile/viewmodels/api_service_provider.dart';
 
 class ActionButtons extends ConsumerWidget {
   const ActionButtons({super.key, required this.friend});
 
   final Account friend;
+
+  Future<void> _handleChatButtonPressed(BuildContext context, WidgetRef ref) async {
+    try {
+      final apiService = ref.read(apiServiceProvider);
+
+      // Fetch all chats for current user
+      final List<Chat> chats = await apiService.getChats();
+
+      // Find existing chat with this friend
+      Chat? existingChat;
+      for (final chat in chats) {
+        if (chat.participantUsernames.contains(friend.username)) {
+          existingChat = chat;
+          break;
+        }
+      }
+
+      if (existingChat != null) {
+        // Navigate to existing chat
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatScreen(chatId: existingChat!.uid),
+            ),
+          );
+        }
+      } else {
+        // Create new chat and navigate to it
+        final newChat = await apiService.createChat(friend.username);
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatScreen(chatId: newChat.uid),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to start chat: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,7 +67,7 @@ class ActionButtons extends ConsumerWidget {
         IconButton(
           icon: const Icon(Icons.message_outlined),
           tooltip: 'Chat with ${friend.displayName}',
-          onPressed: () {},
+          onPressed: () => _handleChatButtonPressed(context, ref),
         ),
         PopupMenuButton<String>(
           onSelected: (value) async {

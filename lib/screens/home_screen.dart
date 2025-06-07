@@ -45,6 +45,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.cardBackground,
+        centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.textLight),
         title: const Text(
           'Feels',
