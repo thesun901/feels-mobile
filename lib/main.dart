@@ -1,4 +1,5 @@
 import 'package:feels_mobile/screens/add_status_screen.dart';
+import 'package:feels_mobile/screens/archive_screen.dart';
 import 'package:feels_mobile/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         '/add_status': (context) => const AddStatusScreen(),
         '/profile': (context) => const ProfileScreen(),
         '/about': (context) => const AboutScreen(),
+        '/archive': (context) => const ArchiveScreen(),
       },
       home: FutureBuilder<Widget>(
         future: _checkAuth(),

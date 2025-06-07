@@ -17,4 +17,6 @@ class AppColors {
   static const Color textLight = Colors.white;
   static const Color textDim = Color(0xFFB0B0B0);
   static const Color shadow = Colors.black38;
+
+  static const Color feelingsCeladon = Color(0xFF32F9C4);
 }
