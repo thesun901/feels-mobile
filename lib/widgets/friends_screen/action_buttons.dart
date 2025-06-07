@@ -4,7 +4,6 @@ import 'package:feels_mobile/models/chat.dart';
 import 'package:feels_mobile/models/account.dart';
 import 'package:feels_mobile/screens/chat_screen.dart';
 import 'package:feels_mobile/viewmodels/accounts_provider.dart';
-import 'package:feels_mobile/viewmodels/current_user_provider.dart';
 import 'package:feels_mobile/viewmodels/unfriend_provider.dart';
 import 'package:feels_mobile/viewmodels/api_service_provider.dart';
 
@@ -16,12 +15,9 @@ class ActionButtons extends ConsumerWidget {
   Future<void> _handleChatButtonPressed(BuildContext context, WidgetRef ref) async {
     try {
       final apiService = ref.read(apiServiceProvider);
-      final currentUserId = ref.read(currentUserIdProvider);
 
       // Fetch all chats for current user
-      print("halo 1");
       final List<Chat> chats = await apiService.getChats();
-      print("halo 2");
 
       // Find existing chat with this friend
       Chat? existingChat;

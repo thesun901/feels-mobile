@@ -7,6 +7,7 @@ import 'package:feels_mobile/viewmodels/current_user_provider.dart';
 import 'package:feels_mobile/viewmodels/chat_provider.dart';
 import 'package:feels_mobile/viewmodels/messages_provider.dart';
 import 'package:feels_mobile/viewmodels/api_service_provider.dart';
+import 'package:feels_mobile/constants/colors.dart';
 
 class ChatScreen extends HookConsumerWidget {
   final String chatId;
@@ -42,7 +43,8 @@ class ChatScreen extends HookConsumerWidget {
           Expanded(
             child: messagesAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Center(child: Text('Error: ${error.toString()}')),
+              error: (error, stack) =>
+                  Center(child: Text('Error: ${error.toString()}')),
               data: (messages) => ListView.builder(
                 reverse: true,
                 itemCount: messages.length,
@@ -50,7 +52,9 @@ class ChatScreen extends HookConsumerWidget {
                   final message = messages[messages.length - 1 - index];
                   return MessageBubble(
                     message: message,
-                    isMe: message.sender['uid'] == ref.read(currentUserIdProvider).value,
+                    isMe:
+                        message.sender['uid'] ==
+                        ref.read(currentUserIdProvider).value,
                   );
                 },
               ),
@@ -59,13 +63,23 @@ class ChatScreen extends HookConsumerWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: textController,
-                    decoration: const InputDecoration(
-                      hintText: 'Type a message...',
-                      border: OutlineInputBorder(),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: AppColors.cardBackground,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: TextField(
+                        controller: textController,
+                        decoration: const InputDecoration(
+                          hintText: 'Type a message...',
+                          border: InputBorder.none,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -75,10 +89,12 @@ class ChatScreen extends HookConsumerWidget {
                     if (textController.text.trim().isEmpty) return;
 
                     try {
-                       await ref.read(apiServiceProvider).sendMessage(
-                        chatId: chatId,
-                        text: textController.text.trim(),
-                      );
+                      await ref
+                          .read(apiServiceProvider)
+                          .sendMessage(
+                            chatId: chatId,
+                            text: textController.text.trim(),
+                          );
                       textController.clear();
                       // Refresh messages after sending
                       ref.invalidate(messagesProvider(chatId));
@@ -92,10 +108,9 @@ class ChatScreen extends HookConsumerWidget {
               ],
             ),
           ),
+          const SizedBox(height: 16),
         ],
       ),
     );
   }
 }
-
-

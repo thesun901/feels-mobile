@@ -1,3 +1,4 @@
+import 'package:feels_mobile/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:feels_mobile/models/message.dart';
 
@@ -17,12 +18,12 @@ class MessageBubble extends StatelessWidget {
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
         decoration: BoxDecoration(
           color: isMe
-              ? Theme.of(context).primaryColor.withValues(alpha: 0.8)
+              ? AppColors.cardBackground
               : Colors.grey[300],
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(25),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
