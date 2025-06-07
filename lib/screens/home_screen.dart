@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:feels_mobile/widgets/home_screen/drawer_item.dart';
+import 'package:feels_mobile/widgets/app_card.dart';
 import '../constants/colors.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../services/api_service.dart';
@@ -54,95 +56,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-              child: Card(
-                color: AppColors.cardBackground.withValues(alpha: 0.5),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 8,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        height: 64,
-                        width: 64,
-                        child: Image.asset(
-                          'assets/images/app_icon.png',
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'Feels',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                      const Text(
-                        'Share your emotions',
-                        style: TextStyle(
-                          color: AppColors.textDim,
-                          fontSize: 14,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.person, color: AppColors.textLight),
-              title: const Text(
-                'My profile',
-                style: TextStyle(color: AppColors.textLight),
-              ),
+            const SizedBox(height: 15),
+            AppCard(),
+            DrawerItem(
+              icon: Icons.person,
+              title: 'My profile',
               onTap: () {
                 Navigator.of(context).pushNamed('/profile');
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.person_add, color: AppColors.textLight),
-              title: const Text(
-                'Add friend',
-                style: TextStyle(color: AppColors.textLight),
-              ),
+            DrawerItem(
+              icon: Icons.person_add,
+              title: 'Add friend',
               onTap: () {
                 Navigator.of(context).pushNamed('/add_friend');
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.settings, color: AppColors.textLight),
-              title: const Text(
-                'Settings',
-                style: TextStyle(color: AppColors.textLight),
-              ),
-              onTap: () {},
+            DrawerItem(
+              icon: Icons.info,
+              title: 'About',
+              onTap: () {
+                Navigator.of(context).pushNamed('/about');
+              },
             ),
-            ListTile(
-              leading: const Icon(Icons.info, color: AppColors.textLight),
-              title: const Text(
-                'About',
-                style: TextStyle(color: AppColors.textLight),
-              ),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout, color: AppColors.textLight),
-              title: const Text(
-                'Logout',
-                style: TextStyle(color: AppColors.textLight),
-              ),
+            DrawerItem(
+              icon: Icons.logout,
+              title: 'Logout',
               onTap: () {
                 ApiService.logout();
                 Navigator.of(context).pushReplacementNamed('/login');
               },
-            ),
+            )
           ],
         ),
       ),

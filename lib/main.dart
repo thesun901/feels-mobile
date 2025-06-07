@@ -6,6 +6,7 @@ import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/add_friend_screen.dart';
+import 'screens/about_screen.dart';
 import 'services/api_service.dart';
 import 'constants/colors.dart';
 
@@ -38,8 +39,8 @@ class MyApp extends StatelessWidget {
           displayColor: AppColors.textLight,
         ),
         popupMenuTheme: ThemeData().popupMenuTheme.copyWith(
-          color: AppColors.darkBackground
-        )
+          color: AppColors.darkBackground,
+        ),
       ),
       routes: {
         '/friends': (context) => const HomeScreen(initialIndex: 0),
@@ -49,7 +50,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/add_status': (context) => const AddStatusScreen(),
-        '/profile': (context) => const ProfileScreen()
+        '/profile': (context) => const ProfileScreen(),
+        '/about': (context) => const AboutScreen(),
       },
       home: FutureBuilder<Widget>(
         future: _checkAuth(),
