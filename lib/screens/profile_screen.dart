@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../viewmodels/account_provider.dart';
 
@@ -43,7 +44,7 @@ class ProfileScreen extends HookConsumerWidget {
               const SizedBox(height: 20),
               Text(
                 accountData.displayName,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -52,8 +53,15 @@ class ProfileScreen extends HookConsumerWidget {
                 '@${accountData.username}',
                 style: Theme.of(
                   context,
-                ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
               ),
+              if (accountData.createdAt != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  'Joined on ${DateFormat('yMMMd').format(accountData.createdAt!)}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textDim),
+                ),
+              ],
               const SizedBox(height: 24),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
