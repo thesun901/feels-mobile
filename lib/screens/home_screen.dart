@@ -1,3 +1,4 @@
+import 'package:feels_mobile/screens/stats_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:feels_mobile/widgets/home_screen/drawer_item.dart';
 import 'package:feels_mobile/widgets/app_card.dart';
@@ -30,10 +31,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  final List<Widget> screens = const [
-    FriendsScreen(),
-    FeedScreen(),
-    Center(child: Text('Profile Screen')),
+  final List<Widget> screens = [
+    const FriendsScreen(),
+    const FeedScreen(),
+    const StatsScreen(),
   ];
 
   @override
@@ -86,7 +87,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ApiService.logout();
                 Navigator.of(context).pushReplacementNamed('/login');
               },
-            )
+            ),
           ],
         ),
       ),

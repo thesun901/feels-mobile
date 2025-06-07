@@ -368,4 +368,29 @@ class ApiService {
       throw Exception(json['error'] ?? 'Failed to create post');
     }
   }
+
+  /// Pobiera wszystkie posty podanego usera (z tokenem autoryzacyjnym).
+  Future<List<Post>> getUserPosts(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+    if (token == null || token.isEmpty) {
+      throw Exception('User not authenticated');
+    }
+
+    final uri = Uri.parse('$baseUrl/users/$userId/posts/');
+
+    final resp = await _client.get(
+      uri,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (resp.statusCode == 200) {
+      final data = jsonDecode(resp.body)['posts'] as List<dynamic>;
+      return data.map((e) => Post.fromJson(e)).toList();
+    }
+    throw Exception('getUserPosts failed (${resp.statusCode})');
+  }
 }

@@ -66,27 +66,33 @@ class PostCard extends StatelessWidget {
                       child: ProfilePicture(
                         size: 20,
                         username: post.authorUsername,
-                      )
+                      ),
                     ),
                     const SizedBox(width: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${post.authorUsername} feels... $feelingName $emoji',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: AppColors.textLight,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${post.authorUsername} feels... $feelingName $emoji',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: AppColors.textLight,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          timeAgo(post.createdAt),
-                          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDim, fontSize: 13),
-                        ),
-                      ],
-                    )
+                          const SizedBox(height: 4),
+                          Text(
+                            timeAgo(post.createdAt),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textDim,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
