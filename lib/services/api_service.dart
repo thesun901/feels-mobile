@@ -490,7 +490,12 @@ class ApiService {
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       final List<dynamic> data = json['messages'];
-      return data.map((e) => Message.fromJson(e)).toList();
+      final messages = data.map((e) => Message.fromJson(e)).toList();
+
+      // Sort messages by created_at in ascending order (oldest first)
+      messages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+
+      return messages;
     } else {
       throw Exception('Failed to load messages: ${response.statusCode}');
     }
