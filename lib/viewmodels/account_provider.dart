@@ -20,7 +20,6 @@ class AccountNotifier extends FamilyAsyncNotifier<Account, AccountParams> {
       accountUid: params.uid,
       accountUsername: params.username,
     );
-    print(account.displayName);
     return account;
   }
 }
