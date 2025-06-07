@@ -1,11 +1,12 @@
-// action_buttons.dart
-import 'package:feels_mobile/models/account.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../../screens/chat_screen.dart';
-import '../../viewmodels/accounts_provider.dart';
-import '../../viewmodels/unfriend_provider.dart';
-import '../../models/chat.dart';
+import 'package:feels_mobile/models/chat.dart';
+import 'package:feels_mobile/models/account.dart';
+import 'package:feels_mobile/screens/chat_screen.dart';
+import 'package:feels_mobile/viewmodels/accounts_provider.dart';
+import 'package:feels_mobile/viewmodels/current_user_provider.dart';
+import 'package:feels_mobile/viewmodels/unfriend_provider.dart';
+import 'package:feels_mobile/viewmodels/api_service_provider.dart';
 
 class ActionButtons extends ConsumerWidget {
   const ActionButtons({super.key, required this.friend});
@@ -55,7 +56,6 @@ class ActionButtons extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        throw Exception(e);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to start chat: $e')),
         );
