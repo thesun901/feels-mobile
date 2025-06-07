@@ -1,3 +1,4 @@
+import 'package:feels_mobile/screens/add_status_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'screens/home_screen.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/add_friend': (context) => AddFriendScreen(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
+        '/add_status': (context) => const AddStatusScreen(),
       },
       home: FutureBuilder<Widget>(
         future: _checkAuth(),

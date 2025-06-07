@@ -260,5 +260,46 @@ class ApiService {
     }
   }
 
-  // TODO: Add auth headers when token is available
+  Future<List<Map<String, dynamic>>> fetchFeelings() async {
+    final response = await _client.get(Uri.parse('$baseUrl/feelings/'));
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final List<dynamic> data = json['feelings'];
+      return data.cast<Map<String, dynamic>>();
+    } else {
+      throw Exception('Nie udało się pobrać uczuć: ${response.statusCode}');
+    }
+  }
+
+  Future<String> createPost({required String body, String? feelingName}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('User not authenticated');
+    }
+
+    final Map<String, dynamic> payload = {'body': body};
+    if (feelingName != null) {
+      payload['feeling_name'] = feelingName;
+    }
+
+    final response = await _client.post(
+      Uri.parse('$baseUrl/posts/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(payload),
+    );
+
+    if (response.statusCode == 201) {
+      final json = jsonDecode(response.body);
+      return json['uid'] as String;
+    } else {
+      final json = jsonDecode(response.body);
+      throw Exception(json['error'] ?? 'Failed to create post');
+    }
+  }
 }
