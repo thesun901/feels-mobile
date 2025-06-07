@@ -65,6 +65,7 @@ class AddStatusScreen extends HookConsumerWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text('Add status'),
+        centerTitle: true,
         backgroundColor: AppColors.darkBackground,
         foregroundColor: AppColors.textLight,
         elevation: 0,
@@ -77,7 +78,7 @@ class AddStatusScreen extends HookConsumerWidget {
           children: [
             const SizedBox(height: 8),
             const Text(
-              'How we feelin?',
+              'How are we feeling?',
               style: TextStyle(
                 color: AppColors.textLight,
                 fontSize: 18,

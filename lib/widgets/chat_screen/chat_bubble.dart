@@ -6,11 +6,7 @@ class MessageBubble extends StatelessWidget {
   final Message message;
   final bool isMe;
 
-  const MessageBubble({
-    super.key,
-    required this.message,
-    required this.isMe,
-  });
+  const MessageBubble({super.key, required this.message, required this.isMe});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +18,13 @@ class MessageBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: isMe
               ? AppColors.cardBackground
-              : Colors.grey[300],
+              : (message.feeling != null
+                    ? Color(
+                        int.parse(
+                          message.feeling!.color.replaceFirst('#', '0xff'),
+                        ),
+                      ).withValues(alpha: 0.75)
+                    : Colors.grey[300]),
           borderRadius: BorderRadius.circular(25),
         ),
         child: Column(
@@ -33,22 +35,51 @@ class MessageBubble extends StatelessWidget {
                 message.sender['username'] ?? 'Unknown',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: (message.feeling != null)
+                      ? Colors.white
+                      : Colors.black,
                 ),
               ),
             Text(
               message.text,
-              style: TextStyle(
-                color: isMe ? Colors.white : Colors.black,
-              ),
+              style: TextStyle(color: isMe ? Colors.white : ((message.feeling != null)
+                  ? Colors.white
+                  : Colors.black)),
             ),
             const SizedBox(height: 4),
-            Text(
-              _formatTime(message.createdAt),
-              style: TextStyle(
-                color: isMe ? Colors.white70 : Colors.grey[600],
-                fontSize: 10,
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  _formatTime(message.createdAt),
+                  style: TextStyle(
+                    color: isMe ? Colors.white70 : (message.feeling != null)
+                        ? Colors.white
+                        : Colors.grey[600],
+                    fontSize: 11,
+                  ),
+                ),
+                if (message.feeling != null) ...[
+                  const SizedBox(width: 16),
+                  Text(
+                    '${message.feeling!.name} ${message.feeling!.emoji}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: isMe
+                          ? Color(
+                              int.parse(
+                                message.feeling!.color.replaceFirst(
+                                  '#',
+                                  '0xff',
+                                ),
+                              ),
+                            )
+                          : Colors.white,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ],
         ),
