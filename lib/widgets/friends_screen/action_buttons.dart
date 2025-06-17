@@ -8,25 +8,14 @@ import 'package:feels_mobile/viewmodels/unfriend_provider.dart';
 import 'package:feels_mobile/viewmodels/api_service_provider.dart';
 
 class ActionButtons extends ConsumerWidget {
-  const ActionButtons({super.key, required this.friend});
+  const ActionButtons({super.key, required this.friend, required this.existingChat});
 
   final Account friend;
+  final Chat? existingChat;
 
   Future<void> _handleChatButtonPressed(BuildContext context, WidgetRef ref) async {
     try {
       final apiService = ref.read(apiServiceProvider);
-
-      // Fetch all chats for current user
-      final List<Chat> chats = await apiService.getChats();
-
-      // Find existing chat with this friend
-      Chat? existingChat;
-      for (final chat in chats) {
-        if (chat.participantUsernames.contains(friend.username)) {
-          existingChat = chat;
-          break;
-        }
-      }
 
       if (existingChat != null) {
         // Navigate to existing chat
