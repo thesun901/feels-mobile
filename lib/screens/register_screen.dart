@@ -1,15 +1,17 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../services/api_service.dart';
+import '../viewmodels/current_user_provider.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
@@ -24,7 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
-  Future<void> handleRegister() async {
+  Future<void> handleRegister(WidgetRef ref) async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     final success = await ApiService.register(
@@ -34,6 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
 
     if (success) {
+      ref.invalidate(currentUserIdProvider);
       Navigator.of(context).pushReplacementNamed('/feed');
     } else {
       setState(() => error = 'Registration failed. Try different credentials.');
@@ -139,7 +142,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ],
                         const SizedBox(height: 24),
                         ElevatedButton(
-                          onPressed: isFormValid ? handleRegister : null,
+                          onPressed: isFormValid ? () => handleRegister(ref) : null,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

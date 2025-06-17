@@ -206,7 +206,7 @@ class ProfileScreen extends HookConsumerWidget {
                                 Container(
                                   width: 1,
                                   height: 30,
-                                  color: AppColors.textDim.withOpacity(0.4),
+                                  color: AppColors.textDim.withValues(alpha: 0.4),
                                   margin: const EdgeInsets.symmetric(
                                     horizontal: 4,
                                   ),
