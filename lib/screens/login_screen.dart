@@ -1,15 +1,17 @@
 import 'dart:ui';
+import 'package:feels_mobile/viewmodels/current_user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../services/api_service.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
@@ -22,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  Future<void> handleLogin() async {
+  Future<void> handleLogin(WidgetRef ref) async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     final success = await ApiService.login(
@@ -31,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (success) {
+      ref.invalidate(currentUserIdProvider);
       Navigator.of(context).pushReplacementNamed('/feed');
     } else {
       setState(() => error = 'Login failed. Check your credentials.');
@@ -44,14 +47,13 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            'assets/images/login_background.jpg',
-            fit: BoxFit.cover,
-          ),
+          Image.asset('assets/images/login_background.jpg', fit: BoxFit.cover),
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
             child: Container(
-              color: Colors.black.withOpacity(0.2), // Optional overlay for better contrast
+              color: Colors.black.withValues(
+                alpha: 0.2,
+              ), // Optional overlay for better contrast
             ),
           ),
           Center(
@@ -59,8 +61,10 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.all(24.0),
               child: Card(
                 elevation: 6,
-                color: Colors.black.withOpacity(0.8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                color: Colors.black.withValues(alpha: 0.8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 16.0),
                   child: Form(
@@ -74,7 +78,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         Text(
                           'Welcome back to Feels!',
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 24),
                         TextFormField(
@@ -82,9 +87,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: InputDecoration(
                             labelText: 'Username',
                             prefixIcon: Icon(Icons.person),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
-                          validator: (value) => value!.isEmpty ? 'Enter username' : null,
+                          validator: (value) =>
+                              value!.isEmpty ? 'Enter username' : null,
                         ),
                         const SizedBox(height: 16),
                         TextFormField(
@@ -93,9 +101,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: InputDecoration(
                             labelText: 'Password',
                             prefixIcon: Icon(Icons.lock),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
-                          validator: (value) => value!.isEmpty ? 'Enter password' : null,
+                          validator: (value) =>
+                              value!.isEmpty ? 'Enter password' : null,
                         ),
                         if (error != null) ...[
                           const SizedBox(height: 12),
@@ -107,10 +118,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
                         const SizedBox(height: 24),
                         ElevatedButton(
-                          onPressed: isFormValid ? handleLogin : null,
+                          onPressed: isFormValid
+                              ? () => handleLogin(ref)
+                              : null,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
                           child: const Text('Login'),
                         ),

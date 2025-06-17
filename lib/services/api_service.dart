@@ -22,7 +22,8 @@ class ApiService {
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       final List<dynamic> data = json['posts'];
-      return data.map((e) => Post.fromJson(e)).toList();
+      var posts = data.map((e) => Post.fromJson(e)).toList();
+      return posts..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } else {
       throw Exception('Failed to load posts: ${response.statusCode}');
     }

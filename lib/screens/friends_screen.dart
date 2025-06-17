@@ -1,8 +1,8 @@
 import 'package:feels_mobile/widgets/friends_screen/friend_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
 import '../viewmodels/accounts_provider.dart';
+import '../viewmodels/chats_provider.dart';
 import '../widgets/friends_screen/friend_list.dart';
 
 class FriendsScreen extends ConsumerStatefulWidget {
@@ -17,6 +17,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
   final FocusNode _searchFocusNode = FocusNode();
 
   bool get _isSearchFocused => _searchFocusNode.hasFocus;
+
   String get _searchQuery => _searchController.text.trim().toLowerCase();
 
   @override
@@ -35,9 +36,16 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.invalidate(
+      accountsProvider(const AccountsFilterParams(onlyFriends: true)),
+    );
+    ref.invalidate(chatsProvider);
+
     final accountsAsync = ref.watch(
       accountsProvider(const AccountsFilterParams(onlyFriends: true)),
     );
+
+    final chatsAsync = ref.watch(chatsProvider);
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -52,6 +60,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
           Expanded(
             child: FriendList(
               accountsAsync: accountsAsync,
+              chatsAsync: chatsAsync,
               searchQuery: _searchQuery,
             ),
           ),

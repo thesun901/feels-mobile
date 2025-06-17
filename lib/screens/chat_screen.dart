@@ -45,6 +45,8 @@ class ChatScreen extends HookConsumerWidget {
 
     final emotions = buildEmotionsMap(feelings);
 
+    final currentUser = ref.read(currentUserIdProvider).value;
+
     final chatAsync = ref.watch(chatProvider(chatId));
     final messagesAsync = ref.watch(messagesProvider(chatId));
 
@@ -72,9 +74,7 @@ class ChatScreen extends HookConsumerWidget {
                   final message = messages[messages.length - 1 - index];
                   return MessageBubble(
                     message: message,
-                    isMe:
-                        message.sender['uid'] ==
-                        ref.read(currentUserIdProvider).value,
+                    isMe: message.sender['uid'] == currentUser,
                   );
                 },
               ),

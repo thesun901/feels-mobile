@@ -26,7 +26,6 @@ class FeelingsNotifier extends StateNotifier<FeelingsState> {
   FeelingsNotifier() : super(FeelingsState());
 
   Future<void> loadFeelings() async {
-    print('loadFeelings wywołane'); // <-- dodaj to
     state = state.copyWith(isLoading: true, error: null);
     try {
       final feelings = await ApiService().fetchFeelings();
