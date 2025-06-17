@@ -28,7 +28,14 @@ class FeedNotifier extends AsyncNotifier<List<Post>> {
     });
 
     // Initial data fetch
-    final posts = await api.getPosts();
-    return posts;
+    final allPosts = await api.getPosts();
+
+    final cutoff = DateTime.now().subtract(const Duration(hours: 24));
+    final recentPosts = allPosts
+        .where((post) => post.createdAt.isAfter(cutoff))
+        .toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    return recentPosts;
   }
 }
