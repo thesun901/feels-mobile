@@ -19,8 +19,12 @@ class FriendTile extends HookConsumerWidget {
 
     if (existingChat != null && existingChat?.lastMessage != null) {
       final prefix = existingChat?.lastMessage?.sender['username'] == friend.username ? '${existingChat?.lastMessage?.sender['username']}: ' : 'You: ';
+      String text = (prefix + (existingChat?.lastMessage?.text ?? friend.username));
+      if (text.length > 20) {
+        text = '${text.substring(0, 20)}...';
+      }
       subtitleWidget = Text(
-        prefix + (existingChat?.lastMessage?.text ?? friend.username),
+        text,
         style: const TextStyle(color: AppColors.textDim, fontSize: 12),
       );
     } else {
